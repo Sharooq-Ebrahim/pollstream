@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"log"
 	"pollstream/internal/config"
-	// _ "github.com/lib/pq"
+
+	_ "github.com/lib/pq"
 )
 
 func ConnectToDB(cfg *config.Config) (*sql.DB, error) {
