@@ -68,7 +68,7 @@ func (r *PollRepository) GetPollByID(id string) (*Poll, error) {
 	for rows.Next() {
 		var option Option
 
-		err := rows.Scan(&option.ID, option.Text, &option.Votes)
+		err := rows.Scan(&option.ID, &option.Text, &option.Votes)
 
 		if err != nil {
 			return nil, err

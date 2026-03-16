@@ -1,9 +1,9 @@
-package http
+package api
 
 import (
 	"encoding/json"
 	"net/http"
-	"pollstream/internal/config/poll"
+	"pollstream/internal/poll"
 )
 
 type PollHandler struct {
@@ -15,7 +15,7 @@ func NewPollHandler(service *poll.PollService) *PollHandler {
 
 }
 
-func (ph *PollHandler) Createpoll(w http.ResponseWriter, r *http.Request) {
+func (ph *PollHandler) CreatePoll(w http.ResponseWriter, r *http.Request) {
 
 	var poll poll.Poll
 
