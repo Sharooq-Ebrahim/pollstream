@@ -79,3 +79,30 @@ func (r *PollRepository) GetPollByID(id string) (*Poll, error) {
 
 	return &p, nil
 }
+
+func (r *PollRepository) GetAllPolls() ([]Poll, error) {
+
+	var polls []Poll
+
+	rows, err := r.db.Query("SELECT id,question FROM polls")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var poll Poll
+
+		err := rows.Scan(&poll.ID, &poll.Question)
+
+		if err != nil {
+			return nil, err
+		}
+
+		polls = append(polls, poll)
+	}
+
+	return polls, nil
+}

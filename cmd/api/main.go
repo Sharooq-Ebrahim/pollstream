@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"pollstream/internal/api"
 	"pollstream/internal/config"
+	handler "pollstream/internal/http"
 	"pollstream/internal/poll"
 	"pollstream/pkg/database"
 )
@@ -24,19 +25,20 @@ func main() {
 	}
 
 	defer db.Close()
-
 	hub := poll.NewHub()
 	go hub.Run()
-
 	pollRepo := poll.NewPollRepository(db)
-	pollService := poll.NewPollService(pollRepo, hub)
-	pollHandler := api.NewPollHandler(pollService)
+	pollService := poll.NewPollService(pollRepo)
+	pollHandler := handler.NewPollHandler(pollService)
+
 	wsHandler := api.NewWSHandler(hub)
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/poll/create", pollHandler.CreatePoll)
 	mux.HandleFunc("/poll/getById", pollHandler.GetPollByID)
+	mux.HandleFunc("/poll/getAll", pollHandler.GetAllPolls)
+
 	mux.HandleFunc("/ws/poll", wsHandler.HandleWS)
 
 	srv := http.Server{

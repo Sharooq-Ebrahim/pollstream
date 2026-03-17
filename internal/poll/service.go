@@ -2,24 +2,22 @@ package poll
 
 type PollService struct {
 	repo *PollRepository
-	hub  *Hub
 }
 
-func NewPollService(repo *PollRepository, hub *Hub) *PollService {
-	return &PollService{repo: repo, hub: hub}
+func NewPollService(repo *PollRepository) *PollService {
+	return &PollService{repo: repo}
 }
 
 func (ps *PollService) CreatePoll(poll *Poll) error {
 
-	err := ps.repo.CreatePoll(poll)
-	if err != nil {
-		return err
-	}
+	return ps.repo.CreatePoll(poll)
 
-	ps.hub.Broadcast(poll)
-	return nil
 }
 
 func (ps *PollService) GetPollByID(id string) (*Poll, error) {
 	return ps.repo.GetPollByID(id)
+}
+
+func (ps *PollService) GetAllPolls() ([]Poll, error) {
+	return ps.repo.GetAllPolls()
 }
