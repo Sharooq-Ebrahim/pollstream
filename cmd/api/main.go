@@ -28,16 +28,17 @@ func main() {
 	hub := poll.NewHub()
 	go hub.Run()
 	pollRepo := poll.NewPollRepository(db)
-	pollService := poll.NewPollService(pollRepo)
+	pollService := poll.NewPollService(pollRepo, hub)
 	pollHandler := handler.NewPollHandler(pollService)
 
-	wsHandler := api.NewWSHandler(hub)
+	wsHandler := api.NewWSHandler(hub, pollService)
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/poll/create", pollHandler.CreatePoll)
 	mux.HandleFunc("/poll/getById", pollHandler.GetPollByID)
 	mux.HandleFunc("/poll/getAll", pollHandler.GetAllPolls)
+	mux.HandleFunc("/poll/vote", pollHandler.Vote)
 
 	mux.HandleFunc("/ws/poll", wsHandler.HandleWS)
 

@@ -11,4 +11,3 @@ type Poll struct {
 	Question string   `json:"question"`
 	Options  []Option `json:"options"`
 }
-

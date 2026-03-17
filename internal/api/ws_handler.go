@@ -17,30 +17,32 @@ var upgrader = websocket.Upgrader{
 }
 
 type WSHandler struct {
-	hub *poll.Hub
+	hub     *poll.Hub
+	service *poll.PollService
 }
 
-func NewWSHandler(hub *poll.Hub) *WSHandler {
-	return &WSHandler{hub: hub}
+func NewWSHandler(hub *poll.Hub, service *poll.PollService) *WSHandler {
+	return &WSHandler{hub: hub, service: service}
 }
 
 func (h *WSHandler) HandleWS(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("error upgrading connection: %v", err)
 		return
 	}
 
-	h.hub.Register(conn)
+	client := h.hub.Register(conn)
 
-	go func() {
-		defer h.hub.Unregister(conn)
-		for {
-			_, _, err := conn.ReadMessage()
-			if err != nil {
-				log.Printf("websocket read error: %v", err)
-				break
-			}
+	if id != "" {
+		poll, err := h.service.GetPollByID(id)
+		if err == nil {
+			client.Send(poll)
 		}
-	}()
+	}
+
+	go client.ReadPump()
+	go client.WritePump()
 }

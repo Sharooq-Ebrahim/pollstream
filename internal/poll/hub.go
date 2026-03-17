@@ -7,20 +7,20 @@ import (
 )
 
 type Hub struct {
-	clients map[*websocket.Conn]bool
+	clients map[*Client]bool
 	broadcast chan interface{}
-	register chan *websocket.Conn
-	unregister chan *websocket.Conn
+	register chan *Client
+	unregister chan *Client
 
 	mu sync.Mutex
 }
 
 func NewHub() *Hub {
 	return &Hub{
-		broadcast:  make(chan interface{}),
-		register:   make(chan *websocket.Conn),
-		unregister: make(chan *websocket.Conn),
-		clients:    make(map[*websocket.Conn]bool),
+		broadcast:  make(chan interface{}, 256),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		clients:    make(map[*Client]bool),
 	}
 }
 
@@ -35,15 +35,16 @@ func (h *Hub) Run() {
 			h.mu.Lock()
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
-				client.Close()
+				close(client.send)
 			}
 			h.mu.Unlock()
 		case message := <-h.broadcast:
 			h.mu.Lock()
 			for client := range h.clients {
-				err := client.WriteJSON(message)
-				if err != nil {
-					client.Close()
+				select {
+				case client.send <- message:
+				default:
+					close(client.send)
 					delete(h.clients, client)
 				}
 			}
@@ -56,10 +57,12 @@ func (h *Hub) Broadcast(v interface{}) {
 	h.broadcast <- v
 }
 
-func (h *Hub) Register(conn *websocket.Conn) {
-	h.register <- conn
+func (h *Hub) Register(conn *websocket.Conn) *Client {
+	client := &Client{hub: h, conn: conn, send: make(chan interface{}, 256)}
+	h.register <- client
+	return client
 }
 
-func (h *Hub) Unregister(conn *websocket.Conn) {
-	h.unregister <- conn
+func (h *Hub) Unregister(client *Client) {
+	h.unregister <- client
 }

@@ -106,3 +106,14 @@ func (r *PollRepository) GetAllPolls() ([]Poll, error) {
 
 	return polls, nil
 }
+
+func (r *PollRepository) Vote(pollID string, optionID string) error {
+
+	_, err := r.db.Exec("UPDATE options SET votes = votes + 1 WHERE poll_id = $1 AND id = $2", pollID, optionID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
