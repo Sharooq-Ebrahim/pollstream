@@ -57,7 +57,7 @@ func (r *PollRepository) GetPollByID(id string) (*Poll, error) {
 		return nil, err
 	}
 
-	rows, err := r.db.Query("SELECT id,text,votes from options where poll_id=$1", p.ID)
+	rows, err := r.db.Query("SELECT id,text,votes from options where poll_id=$1 ORDER BY id", p.ID)
 
 	if err != nil {
 		return nil, err
@@ -94,11 +94,20 @@ func (r *PollRepository) GetAllPolls() ([]Poll, error) {
 
 	for rows.Next() {
 		var poll Poll
-
 		err := rows.Scan(&poll.ID, &poll.Question)
-
 		if err != nil {
 			return nil, err
+		}
+
+		optRows, err := r.db.Query("SELECT id, text, votes FROM options WHERE poll_id = $1 ORDER BY id", poll.ID)
+		if err == nil {
+			for optRows.Next() {
+				var opt Option
+				if err := optRows.Scan(&opt.ID, &opt.Text, &opt.Votes); err == nil {
+					poll.Options = append(poll.Options, opt)
+				}
+			}
+			optRows.Close()
 		}
 
 		polls = append(polls, poll)

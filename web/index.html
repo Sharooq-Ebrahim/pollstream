@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PollStream | Real-time Voting</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="background-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+      <header>
+        <div class="logo">
+          <span class="pulse"></span>
+          <h1>PollStream</h1>
+        </div>
+        <p class="subtitle">Experience real-time feedback</p>
+        <button id="show-create-poll" class="primary-btn">+ Create New Poll</button>
+      </header>
+
+      <main>
+        <section id="create-poll-section" class="card hidden">
+          <div class="card-header">
+            <button id="close-create-btn" class="icon-btn">&larr; Cancel</button>
+            <h2>New Poll</h2>
+          </div>
+          <div class="form-group">
+            <label for="poll-question-input">Question</label>
+            <input type="text" id="poll-question-input" placeholder="What's your question?">
+          </div>
+          <div id="options-inputs" class="form-group">
+            <label>Options</label>
+            <div class="option-input-wrapper">
+              <input type="text" class="option-input" placeholder="Option 1">
+              <input type="text" class="option-input" placeholder="Option 2">
+            </div>
+          </div>
+          <button id="add-option-btn" class="secondary-btn">+ Add Option</button>
+          <div class="form-footer">
+            <button id="submit-poll-btn" class="primary-btn wide">Create Poll</button>
+          </div>
+        </section>
+
+        <section id="poll-selector" class="card">
+          <h2>Browse Polls</h2>
+          <div id="polls-list" class="polls-grid">
+            <div class="loading">Fetching active polls...</div>
+          </div>
+        </section>
+
+        <section id="live-poll" class="card hidden">
+          <div class="card-header">
+            <button id="back-btn" class="icon-btn">&larr; Back</button>
+            <span class="live-indicator"> <span class="dot"></span> LIVE </span>
+          </div>
+          <h2 id="poll-question">Loading question...</h2>
+          <div id="poll-options" class="options-container">
+          </div>
+          <div class="poll-footer">
+            <p id="total-votes">Total Votes: 0</p>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+      </footer>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

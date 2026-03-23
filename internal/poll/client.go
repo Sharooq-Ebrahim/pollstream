@@ -7,9 +7,10 @@ import (
 )
 
 type Client struct {
-	hub  *Hub
-	conn *websocket.Conn
-	send chan interface{}
+	hub    *Hub
+	conn   *websocket.Conn
+	send   chan interface{}
+	pollID string
 }
 
 func (c *Client) Send(v interface{}) {
@@ -17,6 +18,11 @@ func (c *Client) Send(v interface{}) {
 }
 
 func (c *Client) WritePump() {
+
+	defer func() {
+		c.hub.Unregister(c)
+		c.conn.Close()
+	}()
 
 	for message := range c.send {
 		err := c.conn.WriteJSON(message)

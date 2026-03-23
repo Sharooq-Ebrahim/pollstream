@@ -54,9 +54,8 @@ func (ph *PollHandler) GetPollByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(poll)
 	w.WriteHeader(http.StatusOK)
-
+	json.NewEncoder(w).Encode(poll)
 }
 
 func (ph *PollHandler) GetAllPolls(w http.ResponseWriter, r *http.Request) {
@@ -69,9 +68,8 @@ func (ph *PollHandler) GetAllPolls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(polls)
 	w.WriteHeader(http.StatusOK)
-
+	json.NewEncoder(w).Encode(polls)
 }
 
 func (ph *PollHandler) Vote(w http.ResponseWriter, r *http.Request) {

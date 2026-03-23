@@ -34,7 +34,7 @@ func (h *WSHandler) HandleWS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := h.hub.Register(conn)
+	client := h.hub.Register(conn, id)
 
 	if id != "" {
 		poll, err := h.service.GetPollByID(id)

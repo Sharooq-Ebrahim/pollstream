@@ -42,8 +42,12 @@ func main() {
 
 	mux.HandleFunc("/ws/poll", wsHandler.HandleWS)
 
+	// Serve static files
+	fs := http.FileServer(http.Dir("./web"))
+	mux.Handle("/", fs)
+
 	srv := http.Server{
-		Addr:    ":" + cfg.ServerAddress,
+		Addr:    "0.0.0.0:" + cfg.ServerAddress,
 		Handler: mux,
 	}
 
